@@ -17,7 +17,7 @@ public class ConnectorDB {
     private final String prepStmtCacheSizeValue;
     private final String prepStmtCacheSqlLimitParam;
     private final String prepStmtCacheSqlLimitValue;
-    private final int MaximumPoolSize;
+    private final int maximumPoolSize;
     private HikariConfig config = new HikariConfig();
     private HikariDataSource dataSource;
 
@@ -32,7 +32,7 @@ public class ConnectorDB {
         this.prepStmtCacheSizeValue = resource.getString("db.prepStmtCacheSize.value");
         this.prepStmtCacheSqlLimitParam = resource.getString("db.prepStmtCacheSqlLimit.param");
         this.prepStmtCacheSqlLimitValue = resource.getString("db.prepStmtCacheSqlLimit.value");
-        this.MaximumPoolSize = Integer.parseInt(resource.getString("db.MaximumPoolSize"));
+        this.maximumPoolSize = Integer.parseInt(resource.getString("db.maximumPoolSize"));
         initializeDataSourse();
     }
 
@@ -43,7 +43,7 @@ public class ConnectorDB {
         config.addDataSourceProperty(cachePrepStmtsParam, cachePrepStmtsValue);
         config.addDataSourceProperty(prepStmtCacheSizeParam, prepStmtCacheSizeValue);
         config.addDataSourceProperty(prepStmtCacheSqlLimitParam, prepStmtCacheSqlLimitValue);
-        config.setMaximumPoolSize(MaximumPoolSize);
+        config.setMaximumPoolSize(maximumPoolSize);
         dataSource = new HikariDataSource(config);
     }
 

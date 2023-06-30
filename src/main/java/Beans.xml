@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <bean id="dataSource"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="${db.url}"></property>
+        <property name="user" value="${db.user}"></property>
+        <property name="password" value="${db.password}"></property>
+        <property name="cachePrepStmtsParam" value="${db.cachePrepStmts.param}"></property>
+        <property name="cachePrepStmtsValue" value="${db.cachePrepStmts.value}"></property>
+        <property name="prepStmtCacheSizeParam" value="${db.prepStmtCacheSize.param}"></property>
+        <property name="prepStmtCacheSizeValue" value="${db.prepStmtCacheSize.value}"></property>
+        <property name="prepStmtCacheSqlLimitParam" value="${db.prepStmtCacheSqlLimit.param}"></property>
+        <property name="prepStmtCacheSqlLimitValue" value="${db.prepStmtCacheSqlLimit.value}"></property>
+        <property name="maximumPoolSize" value="${db.maximumPoolSize}"></property>
+    </bean>
+
+    <bean id="RequestProvider" class="ua.prom.roboticsdmc.provider.RequestProvider">
+        <property name="CourseDao" ref="CourseDao"></property>
+        <property name="GroupDao" ref="GroupDao"></property>
+        <property name="StudentDao" ref="StudentDao"></property>
+    </bean>
+
+    <bean id="CourseDao" class="ua.prom.roboticsdmc.dao.impl.CourseDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <bean id="GroupDao" class="ua.prom.roboticsdmc.dao.impl.GroupDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <bean id="StudentDao" class="ua.prom.roboticsdmc.dao.impl.StudentDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg name="dataSource" ref="dataSource"></constructor-arg>
+    </bean>
+
+    <bean
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>database.properties</value>
+            </list>
+        </property>
+    </bean>
+</beans>

@@ -5,10 +5,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.1.1</version>
+    </parent>
+
     <groupId>ua.prom.roboticsdmc</groupId>
     <artifactId>school-console-app</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>SchoolConsoleApp</name>
+    <name>SchoolConsoleAppJDBCApi</name>
 
     <properties>
         <junit.jupiter.engine.version>5.8.1</junit.jupiter.engine.version>
@@ -17,7 +23,7 @@
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
         <java.version>17</java.version>
-        <maven.surefire.plugin.version>2.22.0</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
         <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
         <postgresql.version>42.6.0</postgresql.version>
         <HikariCP.version>5.0.1</HikariCP.version>
@@ -28,6 +34,34 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
