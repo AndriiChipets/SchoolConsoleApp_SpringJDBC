@@ -12,7 +12,7 @@ import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Course;
 
-public class CourseDaoImpl extends AbstractCrudDaoImpl<Course> implements CourseDao {
+public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implements CourseDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.courses (course_name, course_description) VALUES (?, ?)";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.courses WHERE course_id=?";
@@ -50,7 +50,7 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Course> implements Course
     }
 
     @Override
-    public List<Course> getAllStudentCoursesByStudentID(int studentId) {
+    public List<Course> getAllStudentCoursesByStudentID(Integer studentId) {
 
         List<Course> studentCourses = new ArrayList<>();
         String sql = "SELECT * FROM school_app_schema.courses " + "INNER JOIN school_app_schema.students_courses "
@@ -73,7 +73,7 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Course> implements Course
     }
     
     @Override
-    public void addStudentToCourse(int studentId, int coursesId) {
+    public void addStudentToCourse(Integer studentId, Integer coursesId) {
 
         String sql = "INSERT INTO school_app_schema.students_courses(student_id, course_id) VALUES (?, ?)";
 
@@ -89,7 +89,7 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Course> implements Course
     }
 
     @Override
-    public void removeStudentFromCourse(int studentId, int courseId) {
+    public void removeStudentFromCourse(Integer studentId, Integer courseId) {
 
         String sql = "DELETE FROM school_app_schema.students_courses WHERE student_id=? AND course_id = ?";
 

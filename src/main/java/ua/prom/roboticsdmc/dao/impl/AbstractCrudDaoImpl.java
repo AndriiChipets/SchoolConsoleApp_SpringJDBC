@@ -13,7 +13,7 @@ import ua.prom.roboticsdmc.dao.ConnectorDB;
 import ua.prom.roboticsdmc.dao.CrudDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 
-public abstract class AbstractCrudDaoImpl<E> implements CrudDao<E> {
+public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
 
     private static final BiConsumer<PreparedStatement, Integer> INT_PARAM_SETTER = (preparedStatement, integer) -> {
         try {
@@ -80,16 +80,16 @@ public abstract class AbstractCrudDaoImpl<E> implements CrudDao<E> {
     }
 
     @Override
-    public Optional<E> findById(Integer id) {
+    public Optional<E> findById(ID id) {
         return findByParam(id, findByIdQuery, INT_PARAM_SETTER);
     }
 
-    private <P> Optional<E> findByParam(P param, String findByParam,
-            BiConsumer<PreparedStatement, P> designatedParamSetter) {
+    private <P> Optional<E> findByParam(ID id, String findByParam,
+            BiConsumer<PreparedStatement, Integer> intParamSetter) {
 
         try (final Connection connection = connectorDB.getConnection();
                 final PreparedStatement preparedStatement = connection.prepareStatement(findByParam)) {
-            designatedParamSetter.accept(preparedStatement, param);
+            intParamSetter.accept(preparedStatement, (Integer) id);
 
             try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                 return resultSet.next() ? Optional.of(mapResultSetToEntity(resultSet)) : Optional.empty();
@@ -100,16 +100,16 @@ public abstract class AbstractCrudDaoImpl<E> implements CrudDao<E> {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(ID id) {
         deleteByParam(id, deleteByIdQuery, INT_PARAM_SETTER);
     }
 
-    private <P> void deleteByParam(P param, String deleteByParam,
-            BiConsumer<PreparedStatement, P> designatedParamSetter) {
+    private <P> void deleteByParam(ID id, String deleteByParam,
+            BiConsumer<PreparedStatement, Integer> intParamSetter) {
 
         try (final Connection connection = connectorDB.getConnection();
                 final PreparedStatement preparedStatement = connection.prepareStatement(deleteByParam)) {
-            designatedParamSetter.accept(preparedStatement, param);
+            intParamSetter.accept(preparedStatement, (Integer) id);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {

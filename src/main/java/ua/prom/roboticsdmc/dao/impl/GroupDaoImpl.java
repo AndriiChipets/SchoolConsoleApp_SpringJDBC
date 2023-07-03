@@ -12,7 +12,7 @@ import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Group;
 
-public class GroupDaoImpl extends AbstractCrudDaoImpl<Group> implements GroupDao {
+public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements GroupDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.groups (group_name) VALUES (?)";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.groups WHERE group_id=?";
@@ -45,7 +45,7 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Group> implements GroupDao
     }
 
     @Override
-    public List<Group> findGroupWithLessOrEqualsStudentQuantity(int studentQuantity) {
+    public List<Group> findGroupWithLessOrEqualsStudentQuantity(Integer studentQuantity) {
 
         List<Group> groups = new ArrayList<>();
         String sql = "SELECT school_app_schema.students.group_id, school_app_schema.groups.group_name, COUNT (school_app_schema.students.student_id) "

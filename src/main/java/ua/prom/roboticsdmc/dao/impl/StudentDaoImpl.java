@@ -12,7 +12,7 @@ import ua.prom.roboticsdmc.dao.StudentDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Student;
 
-public class StudentDaoImpl extends AbstractCrudDaoImpl<Student> implements StudentDao {
+public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implements StudentDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.students (first_name, last_name, group_id) VALUES (?,?,?)";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.students WHERE student_id=?";
