@@ -50,8 +50,8 @@ public class FrontController {
         boolean isWork = true;
         while (isWork) {
             viewProvider.printMessage(MENU);
-            int choose = viewProvider.readInt();
-            switch (choose) {
+            int choice = viewProvider.readInt();
+            switch (choice) {
             case 0 -> isWork = false;
             case 1 -> findGroupWithStudentsQuantity();
             case 2 -> findStudentByCourseName();
@@ -73,7 +73,7 @@ public class FrontController {
             case 18 -> updateCourse();
             case 19 -> deleteCoursetById();
             default -> viewProvider
-                    .printMessage("Please, make right choise from the list or enter \"0\" to exit from the program");
+                    .printMessage("Please, make right choice from the list or enter \"0\" to exit from the program");
             }
         }
     }

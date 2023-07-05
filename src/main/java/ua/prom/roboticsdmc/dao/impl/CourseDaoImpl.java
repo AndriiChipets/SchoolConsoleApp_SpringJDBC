@@ -20,16 +20,21 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
     private static final String FIND_ALL_PEGINATION_QUERY = "SELECT * FROM school_app_schema.courses ORDER BY course_id ASC LIMIT ? OFFSET ?";
     private static final String UPDATE_QUERY = "UPDATE school_app_schema.courses SET course_name=?, course_description=? WHERE course_id=?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.courses WHERE course_id=?";
+    private static final String GET_ALL_STUDENT_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM school_app_schema.courses "
+            + "INNER JOIN school_app_schema.students_courses "
+            + "ON school_app_schema.courses.course_id = school_app_schema.students_courses.course_id "
+            + "WHERE school_app_schema.students_courses.student_id = ? ";
+    private static final String ADD_STUDENT_TO_COURSE_QUERY = "INSERT INTO school_app_schema.students_courses(student_id, course_id) VALUES (?, ?)";
+    private static final String DELETE_STUDENT_FROM_COURSE_QUERY = "DELETE FROM school_app_schema.students_courses WHERE student_id=? AND course_id = ?";;
 
     public CourseDaoImpl(ConnectorDB connectorDB) {
         super(connectorDB, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PEGINATION_QUERY, UPDATE_QUERY,
                 DELETE_BY_ID_QUERY);
     }
-    
+
     @Override
     protected Course mapResultSetToEntity(ResultSet resultSet) throws SQLException {
-        return Course.builder()
-                .withCourseId(resultSet.getInt("course_id"))
+        return Course.builder().withCourseId(resultSet.getInt("course_id"))
                 .withCourseName(resultSet.getString("course_name"))
                 .withCourseDescription(resultSet.getString("course_description")).build();
     }
@@ -53,12 +58,10 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
     public List<Course> getAllStudentCoursesByStudentID(Integer studentId) {
 
         List<Course> studentCourses = new ArrayList<>();
-        String sql = "SELECT * FROM school_app_schema.courses " + "INNER JOIN school_app_schema.students_courses "
-                + "ON school_app_schema.courses.course_id = school_app_schema.students_courses.course_id "
-                + "WHERE school_app_schema.students_courses.student_id = ? ";
 
         try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection
+                        .prepareStatement(GET_ALL_STUDENT_COURSES_BY_STUDENT_ID_QUERY)) {
 
             preparedStatement.setInt(1, studentId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -71,14 +74,12 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
         }
         return studentCourses;
     }
-    
+
     @Override
     public void addStudentToCourse(Integer studentId, Integer coursesId) {
 
-        String sql = "INSERT INTO school_app_schema.students_courses(student_id, course_id) VALUES (?, ?)";
-
         try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(ADD_STUDENT_TO_COURSE_QUERY)) {
 
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, coursesId);
@@ -91,39 +92,14 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
     @Override
     public void removeStudentFromCourse(Integer studentId, Integer courseId) {
 
-        String sql = "DELETE FROM school_app_schema.students_courses WHERE student_id=? AND course_id = ?";
-
         try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(DELETE_STUDENT_FROM_COURSE_QUERY)) {
 
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, courseId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseSqlRuntimeException("Student is not deleted from the course..", e);
-        }
-    }
-    
-    @Override
-    public void fillRandomStudentCourseTable(List<List<Integer>> studentIdCoursesId) {
-
-        String sql = "INSERT INTO school_app_schema.students_courses(student_id, course_id) VALUES (?, ?)";
-
-        try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            for (int i = 0; i < studentIdCoursesId.size(); i++) {
-                List<Integer> coursesId = studentIdCoursesId.get(i);
-                for (int j = 0; j < coursesId.size(); j++) {
-                    preparedStatement.setInt(1, i + 1);
-                    preparedStatement.setInt(2, coursesId.get(j));
-                    preparedStatement.addBatch();
-                }
-            }
-            preparedStatement.executeBatch();
-        } catch (SQLException e) {
-            throw new DataBaseSqlRuntimeException("CourseID and studentID are not added to the students_course table..",
-                    e);
         }
     }
 }

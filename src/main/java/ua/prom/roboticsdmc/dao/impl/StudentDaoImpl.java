@@ -20,6 +20,12 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
     private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.students ORDER BY student_id ASC LIMIT ? OFFSET ?";
     private static final String UPDATE_QUERY = "UPDATE school_app_schema.students SET first_name=?, last_name=?, group_id=? WHERE student_id=?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.students WHERE student_id=?";
+    private static final String FIND_STUDENTS_BY_COURSE_NAME_QUERY = "SELECT * FROM school_app_schema.students "
+            + "INNER JOIN school_app_schema.students_courses "
+            + "ON school_app_schema.students.student_id = school_app_schema.students_courses.student_id "
+            + "INNER JOIN school_app_schema.courses "
+            + "ON school_app_schema.students_courses.course_id = school_app_schema.courses.course_id "
+            + "WHERE school_app_schema.courses.course_name = ? " + "ORDER BY school_app_schema.students.student_id ASC";
 
     public StudentDaoImpl(ConnectorDB connectorDB) {
         super(connectorDB, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
@@ -57,15 +63,9 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
     public List<Student> findStudentsByCourseName(String courseName) {
  
         List<Student> courseStudents = new ArrayList<>();
-        String sql = "SELECT * FROM school_app_schema.students " + "INNER JOIN school_app_schema.students_courses "
-                + "ON school_app_schema.students.student_id = school_app_schema.students_courses.student_id "
-                + "INNER JOIN school_app_schema.courses "
-                + "ON school_app_schema.students_courses.course_id = school_app_schema.courses.course_id "
-                + "WHERE school_app_schema.courses.course_name = ? "
-                + "ORDER BY school_app_schema.students.student_id ASC";
 
         try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(FIND_STUDENTS_BY_COURSE_NAME_QUERY)) {
 
             preparedStatement.setString(1, courseName);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -77,24 +77,5 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
             throw new DataBaseSqlRuntimeException("Can't get students who related to the course..", e);
         }
         return courseStudents;
-    }
-
-    @Override
-    public void addGroupIdtoStudents(List<Student> students) {
-
-        String sql = "UPDATE school_app_schema.students SET group_id=? WHERE student_id=?";
-
-        try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            for (int i = 0; i < students.size(); i++) {
-                preparedStatement.setInt(1, students.get(i).getGroupId());
-                preparedStatement.setInt(2, students.get(i).getStudentId());
-                preparedStatement.addBatch();
-            }
-            preparedStatement.executeBatch();
-        } catch (SQLException e) {
-            throw new DataBaseSqlRuntimeException("GroupId is not added to the student table..", e);
-        }
     }
 }
