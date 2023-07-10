@@ -7,11 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import ua.prom.roboticsdmc.dao.ConnectorDB;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Group;
 
+@Repository
 public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements GroupDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.groups (group_name) VALUES (?)";

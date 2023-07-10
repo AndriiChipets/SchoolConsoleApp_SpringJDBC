@@ -2,6 +2,8 @@ package ua.prom.roboticsdmc.controller;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.dao.StudentDao;
@@ -10,6 +12,7 @@ import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.view.ViewProvider;
 
+@Service
 public class FrontController {
     
    private static final String MENU = "\n\t ============ Please, choose what do you want to do ============\n"
@@ -33,50 +36,49 @@ public class FrontController {
             + "18 -> CRUD_COURSE update course \n" 
             + "19 -> CRUD_COURSE delete course by the COURSE_ID \n"
             + "0 -> To exit from the program \n";
+   private static final String WRONG_CHOICE_MESSAGE = "Please, make right choice from the list or enter \"0\" to exit from the program";
+   private final StudentDao studentDao;
+   private final CourseDao courseDao;
+   private final GroupDao groupDao;
+   private final ViewProvider viewProvider;
 
-    private final StudentDao studentDao;
-    private final CourseDao courseDao;
-    private final GroupDao groupDao;
-    private final ViewProvider viewProvider; 
+   public FrontController(StudentDao studentDao, CourseDao courseDao, GroupDao groupDao, ViewProvider viewProvider) {
+       this.studentDao = studentDao;
+       this.courseDao = courseDao;
+       this.groupDao = groupDao;
+       this.viewProvider = viewProvider;
+   }
 
-    public FrontController(StudentDao studentDao, CourseDao courseDao, GroupDao groupDao, ViewProvider viewProvider) {
-        this.studentDao = studentDao;
-        this.courseDao = courseDao;
-        this.groupDao = groupDao;
-        this.viewProvider = viewProvider;
-    }
-
-    public void run() {
-        boolean isWork = true;
-        while (isWork) {
-            viewProvider.printMessage(MENU);
-            int choice = viewProvider.readInt();
-            switch (choice) {
-            case 0 -> isWork = false;
-            case 1 -> findGroupWithStudentsQuantity();
-            case 2 -> findStudentByCourseName();
-            case 3 -> addStudentToCourse();
-            case 4 -> removeStudentFromCourse();
-            case 5 -> addNewStudent();
-            case 6 -> findStudentById();
-            case 7 -> findAllDeterminedStudents();
-            case 8 -> updateStudent();
-            case 9 -> deleteStudentById();
-            case 10 -> addNewGroup();
-            case 11 -> findGroupById();
-            case 12 -> findAllDeterminedGroups();
-            case 13 -> updateGroup();
-            case 14 -> deleteGroupById();
-            case 15 -> addNewCourse();
-            case 16 -> findCourseById();
-            case 17 -> findAllDeterminedCourses();
-            case 18 -> updateCourse();
-            case 19 -> deleteCoursetById();
-            default -> viewProvider
-                    .printMessage("Please, make right choice from the list or enter \"0\" to exit from the program");
-            }
-        }
-    }
+   public void run() {
+       boolean isWork = true;
+       while (isWork) {
+           viewProvider.printMessage(MENU);
+           int choice = viewProvider.readInt();
+           switch (choice) {
+           case 0 -> isWork = false;
+           case 1 -> findGroupWithStudentsQuantity();
+           case 2 -> findStudentByCourseName();
+           case 3 -> addStudentToCourse();
+           case 4 -> removeStudentFromCourse();
+           case 5 -> addNewStudent();
+           case 6 -> findStudentById();
+           case 7 -> findAllDeterminedStudents();
+           case 8 -> updateStudent();
+           case 9 -> deleteStudentById();
+           case 10 -> addNewGroup();
+           case 11 -> findGroupById();
+           case 12 -> findAllDeterminedGroups();
+           case 13 -> updateGroup();
+           case 14 -> deleteGroupById();
+           case 15 -> addNewCourse();
+           case 16 -> findCourseById();
+           case 17 -> findAllDeterminedCourses();
+           case 18 -> updateCourse();
+           case 19 -> deleteCoursetById();
+           default -> viewProvider.printMessage(WRONG_CHOICE_MESSAGE);
+           }
+       }
+   }
     
     private void findGroupWithStudentsQuantity() {
         viewProvider.printMessage("Enter students quantity: ");
@@ -90,7 +92,7 @@ public class FrontController {
         findAllCourses();
         viewProvider.printMessage("Enter course name: ");
         String courseName = viewProvider.read();
-        List<Student> courseStudents = studentDao.findStudentsByCourseName(courseName);
+        List<Student> courseStudents = studentDao.findStudentsByCourseName(courseName);        
         courseStudents.forEach(e -> viewProvider.printMessage(e.toString()));
     }
 
@@ -139,7 +141,7 @@ public class FrontController {
         int studentId = viewProvider.readInt();
         viewProvider.printMessage(studentDao.findById(studentId).toString());
     }
-
+ 
     private void findAllDeterminedStudents() {
         viewProvider.printMessage("Enter student quantity which you want to skip from beginning of the table: ");
         int rowOffset = viewProvider.readInt();

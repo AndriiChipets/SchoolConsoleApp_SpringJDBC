@@ -7,11 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import ua.prom.roboticsdmc.dao.ConnectorDB;
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Course;
 
+@Repository
 public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implements CourseDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.courses (course_name, course_description) VALUES (?, ?)";

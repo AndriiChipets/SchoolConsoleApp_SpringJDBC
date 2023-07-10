@@ -2,6 +2,9 @@ package ua.prom.roboticsdmc.view;
 
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ViewProvider {
 
     private final Scanner scanner;
@@ -24,6 +27,5 @@ public class ViewProvider {
 
     public int readInt() {
         return Integer.parseInt(scanner.nextLine());
-
     }
 }

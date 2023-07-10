@@ -12,7 +12,7 @@ public class SchoolApplication {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
                 SchoolApplicationConfig.class)) {
 
-            FrontController frontController = context.getBean("getFrontController", FrontController.class);
+            FrontController frontController = context.getBean(FrontController.class);
             frontController.run();
         }
     }

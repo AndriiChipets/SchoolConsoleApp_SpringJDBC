@@ -31,7 +31,6 @@
         <mybatis.version>3.5.13</mybatis.version>
         <h2database.version>2.1.214</h2database.version>
         <maven.shade.plugin.version>3.5.0</maven.shade.plugin.version>
-        <system-lambda.version>1.2.1</system-lambda.version>
     </properties>
 
     <dependencies>
@@ -111,12 +110,6 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2database.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>${system-lambda.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
