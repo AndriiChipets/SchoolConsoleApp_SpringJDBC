@@ -1,8 +1,9 @@
 package ua.prom.roboticsdmc.dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
+
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -47,7 +48,7 @@ public class ConnectorDB {
         dataSource = new HikariDataSource(config);
     }
 
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    public DataSource getDataSource() {
+        return dataSource;
     }
 }
