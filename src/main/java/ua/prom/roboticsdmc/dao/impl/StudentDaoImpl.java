@@ -1,17 +1,12 @@
 package ua.prom.roboticsdmc.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import ua.prom.roboticsdmc.dao.ConnectorDB;
 import ua.prom.roboticsdmc.dao.StudentDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Student;
 
 @Repository
@@ -30,55 +25,42 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
             + "ON school_app_schema.students_courses.course_id = school_app_schema.courses.course_id "
             + "WHERE school_app_schema.courses.course_name = ? " + "ORDER BY school_app_schema.students.student_id ASC";
 
-    public StudentDaoImpl(ConnectorDB connectorDB) {
-        super(connectorDB, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
+    public StudentDaoImpl(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
                 DELETE_BY_ID_QUERY);
     }
     
     @Override
-    protected Student mapResultSetToEntity(ResultSet resultSet) throws SQLException {
-        return Student.builder()
-                .withStudentId(resultSet.getInt("student_id"))
-                .withGroupId(resultSet.getInt("group_id"))
-                .withFirstName(resultSet.getString("first_name"))
-                .withLastName(resultSet.getString("last_name"))
-                .build();
+    protected RowMapper<Student> createRowMapper() {
+        return (rs, rowNum) -> {
+            return Student.builder()
+                    .withStudentId(rs.getInt("student_id"))
+                    .withGroupId(rs.getInt("group_id"))
+                    .withFirstName(rs.getString("first_name"))
+                    .withLastName(rs.getString("last_name"))
+                    .build();
+        };
     }
     
     @Override
-    protected void mapEntityToPreparedStatementSave(Student student, PreparedStatement preparedStatement)
-            throws SQLException {
-        preparedStatement.setString(1, student.getFirstName());
-        preparedStatement.setString(2, student.getLastName());
-        preparedStatement.setInt(3, student.getGroupId());
+    protected Object[] getEntityPropertiesToSave(Student student) {
+        return new Object[] { 
+                student.getFirstName(), 
+                student.getLastName(), 
+                student.getGroupId() };
     }
-    
+
     @Override
-    protected void mapEntityToPreparedStatementUpdate(Student student, PreparedStatement preparedStatement)
-            throws SQLException {
-        preparedStatement.setString(1, student.getFirstName());
-        preparedStatement.setString(2, student.getLastName());
-        preparedStatement.setInt(3, student.getGroupId());
-        preparedStatement.setInt(4, student.getStudentId());
+    protected Object[] getEntityPropertiesToUpdate(Student student) {
+        return new Object[] {
+                student.getFirstName(),
+                student.getLastName(),
+                student.getGroupId(),
+                student.getStudentId() };
     }
 
     @Override
     public List<Student> findStudentsByCourseName(String courseName) {
- 
-        List<Student> courseStudents = new ArrayList<>();
-
-        try (Connection connection = connectorDB.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(FIND_STUDENTS_BY_COURSE_NAME_QUERY)) {
-
-            preparedStatement.setString(1, courseName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                courseStudents.add(mapResultSetToEntity(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new DataBaseSqlRuntimeException("Can't get students who related to the course..", e);
-        }
-        return courseStudents;
+        return jdbcTemplate.query(FIND_STUDENTS_BY_COURSE_NAME_QUERY, createRowMapper(), courseName);
     }
 }
