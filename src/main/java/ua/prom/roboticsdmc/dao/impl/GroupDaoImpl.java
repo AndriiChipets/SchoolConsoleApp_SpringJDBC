@@ -33,7 +33,10 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
     @Override
     protected RowMapper<Group> createRowMapper() {
         return (rs, rowNum) -> {
-            return new Group(rs.getInt("group_id"), rs.getString("group_name"));
+            return Group.builder()
+                    .withGroupId(rs.getInt("group_id"))
+                    .withGroupName(rs.getString("group_name"))
+                    .build();
         };
     }
 
@@ -44,7 +47,9 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
 
     @Override
     protected Object[] getEntityPropertiesToUpdate(Group group) {
-        return new Object[] { group.getGroupName(), group.getGroupId() };
+        return new Object[] { 
+                group.getGroupName(), 
+                group.getGroupId() };
     }
 
     @Override

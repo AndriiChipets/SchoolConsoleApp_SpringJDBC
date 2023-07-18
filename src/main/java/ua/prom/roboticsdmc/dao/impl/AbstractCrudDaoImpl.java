@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import ua.prom.roboticsdmc.dao.CrudDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 
 public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
 

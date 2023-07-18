@@ -53,8 +53,12 @@ class GroupDaoImplTest {
 
         int expectedGroupId = 6;
         String groupName = "AA-00";
-        Group addedGroup = new Group(groupName);
-        Optional<Group> expectedGroup = Optional.of(new Group(expectedGroupId, groupName));
+        Group addedGroup = Group.builder().withGroupName(groupName).build();
+        Optional<Group> expectedGroup = Optional.of(
+                Group.builder()
+                .withGroupId(expectedGroupId)
+                .withGroupName(groupName)
+                .build());
 
         groupDao.save(addedGroup);
 
@@ -66,16 +70,41 @@ class GroupDaoImplTest {
     void saveAll_shouldAddGroupsToTable_whenEnteredDataIsCorrect() {
 
         List<Group> addedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group("AA-01"), 
-                new Group("BB-02")));
+                Group.builder()
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupName("BB-02")
+                .build()));
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"),
-                new Group(2, "VA-90"),
-                new Group(3, "VA-52"),
-                new Group(4, "FF-49"),
-                new Group(5, "SR-71"),
-                new Group(6, "AA-01"),
-                new Group(7, "BB-02")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build(),
+                Group.builder()
+                .withGroupId(3)
+                .withGroupName("VA-52")
+                .build(),
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build(),
+                Group.builder()
+                .withGroupId(6)
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupId(7)
+                .withGroupName("BB-02")
+                .build()));
 
         groupDao.saveAll(addedGroups);
 
@@ -88,7 +117,10 @@ class GroupDaoImplTest {
 
         int groupId = 1;
         Optional<Group> expectedOptional = Optional.of(
-                new Group(1, "YY-58"));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build());
 
         assertEquals(expectedOptional, groupDao.findById(groupId));
     }
@@ -107,11 +139,26 @@ class GroupDaoImplTest {
     void findAll_shouldReturnListOfGroups_whenThereAreSomeGroupsInTable() {
 
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(2, "VA-90"),
-                new Group(3, "VA-52"), 
-                new Group(4, "FF-49"), 
-                new Group(5, "SR-71")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build(),
+                Group.builder()
+                .withGroupId(3)
+                .withGroupName("VA-52")
+                .build(),
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findAll());
     }
@@ -123,8 +170,14 @@ class GroupDaoImplTest {
         int rowOffset = 0;
         int rowLimit = 2;
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(2, "VA-90")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findAll(rowOffset, rowLimit));
     }
@@ -135,9 +188,16 @@ class GroupDaoImplTest {
 
         int groupId = 1;
         String groupName = "YY-60";
-        Group updatedGroup = new Group(groupId, groupName);
+        Group updatedGroup = 
+                Group.builder()
+                .withGroupId(groupId)
+                .withGroupName(groupName)
+                .build();
         Optional<Group> expectedGroup = Optional.of(
-                new Group(groupId, groupName));
+                Group.builder()
+                .withGroupId(groupId)
+                .withGroupName(groupName)
+                .build());
 
         groupDao.update(updatedGroup);
 
@@ -161,9 +221,18 @@ class GroupDaoImplTest {
 
         int studentQuantity = 2;
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(4, "FF-49"), 
-                new Group(5, "SR-71")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(), 
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findGroupWithLessOrEqualsStudentQuantity(studentQuantity));
     }
