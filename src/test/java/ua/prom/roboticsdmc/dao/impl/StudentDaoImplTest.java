@@ -1,7 +1,6 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,15 +19,18 @@ import org.springframework.test.context.jdbc.Sql;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.StudentDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Student;
 
 @JdbcTest
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
-        scripts = { "/sql/schemaH2.sql", "/sql/dataCourse.sql", "/sql/dataGroup.sql", "/sql/dataStudent.sql",
-        "/sql/dataStudentCourse.sql" }, 
+        scripts = { 
+                "/sql/schemaH2.sql", 
+                "/sql/dataCourse.sql", 
+                "/sql/dataGroup.sql", 
+                "/sql/dataStudent.sql",
+                "/sql/dataStudentCourse.sql" }, 
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @DisplayName("StudentDaoImplTest")
@@ -179,9 +181,7 @@ class StudentDaoImplTest {
 
         int studentId = 100;
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> studentDao.findById(studentId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), studentDao.findById(studentId));
     }
 
     @Test
@@ -305,9 +305,7 @@ class StudentDaoImplTest {
 
         studentDao.deleteById(studentId);
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> studentDao.findById(studentId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), studentDao.findById(studentId));
     }
 
     @Test

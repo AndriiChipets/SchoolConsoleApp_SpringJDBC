@@ -1,7 +1,6 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,15 +20,18 @@ import org.springframework.test.context.jdbc.Sql;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.GroupDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Group;
 
 @JdbcTest
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
-        scripts = { "/sql/schemaH2.sql", "/sql/dataCourse.sql", "/sql/dataGroup.sql", "/sql/dataStudent.sql",
-        "/sql/dataStudentCourse.sql" }, 
+        scripts = { 
+                "/sql/schemaH2.sql", 
+                "/sql/dataCourse.sql", 
+                "/sql/dataGroup.sql", 
+                "/sql/dataStudent.sql",
+                "/sql/dataStudentCourse.sql" }, 
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @DisplayName("GroupDaoImplTest")
@@ -92,14 +94,12 @@ class GroupDaoImplTest {
     }
 
     @Test
-    @DisplayName("findById method should throw DataBaseSqlRuntimeException")
-    void findById_shouldThrowDataBaseSqlRuntimeException_whenThereIsNotAnyGroupInTableWithEnteredGroupId() {
+    @DisplayName("findById method should return empty Optional if Course not exists")
+    void findById_shouldReturnEmptyOptional_whenThereIsNotAnyGroupInTableWithEnteredGroupId() {
 
         int groupId = 100;
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> groupDao.findById(groupId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), groupDao.findById(groupId));
     }
 
     @Test
@@ -152,10 +152,7 @@ class GroupDaoImplTest {
 
         groupDao.deleteById(groupId);
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> groupDao.findById(groupId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
-
+        assertEquals(Optional.empty(), groupDao.findById(groupId));
     }
 
     @Test

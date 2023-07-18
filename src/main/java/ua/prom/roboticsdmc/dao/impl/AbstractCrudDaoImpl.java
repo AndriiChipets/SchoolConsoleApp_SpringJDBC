@@ -54,9 +54,9 @@ public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
         try {
             entity = jdbcTemplate.queryForObject(findByIdQuery, createRowMapper(), id);
         } catch (DataAccessException e) {
-            throw new DataBaseSqlRuntimeException("Can't get element from the table by element ID..", e);
+            return Optional.empty();
         }
-        return Optional.ofNullable(entity);
+        return Optional.of(entity);
     }
 
     @Override
