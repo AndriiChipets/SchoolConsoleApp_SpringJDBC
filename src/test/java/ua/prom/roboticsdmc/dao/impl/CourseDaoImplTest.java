@@ -1,7 +1,6 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,23 +18,32 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.CourseDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Course;
+import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @JdbcTest
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
-        scripts = { "/sql/schemaH2.sql", "/sql/dataCourse.sql", "/sql/dataGroup.sql", "/sql/dataStudent.sql",
-        "/sql/dataStudentCourse.sql" }, 
+        scripts = { 
+                "/sql/schema.sql", 
+                "/sql/dataCourse.sql", 
+                "/sql/dataGroup.sql", 
+                "/sql/dataStudent.sql",
+                "/sql/dataStudentCourse.sql" 
+                }, 
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @DisplayName("CourseDaoImplTest")
 
 class CourseDaoImplTest {
+    
+    @ClassRule
+    public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -132,9 +141,7 @@ class CourseDaoImplTest {
 
         int courseId = 100;
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> courseDao.findById(courseId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), courseDao.findById(courseId));
     }
 
     @Test
@@ -220,9 +227,7 @@ class CourseDaoImplTest {
 
         courseDao.deleteById(courseId);
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> courseDao.findById(courseId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), courseDao.findById(courseId));
     }
 
     @Test

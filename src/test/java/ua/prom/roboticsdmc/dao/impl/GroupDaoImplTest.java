@@ -1,13 +1,13 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,23 +18,31 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.GroupDao;
-import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.domain.Group;
+import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @JdbcTest
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
-        scripts = { "/sql/schemaH2.sql", "/sql/dataCourse.sql", "/sql/dataGroup.sql", "/sql/dataStudent.sql",
-        "/sql/dataStudentCourse.sql" }, 
+        scripts = { 
+                "/sql/schema.sql", 
+                "/sql/dataCourse.sql", 
+                "/sql/dataGroup.sql", 
+                "/sql/dataStudent.sql",
+                "/sql/dataStudentCourse.sql" }, 
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @DisplayName("GroupDaoImplTest")
 
 class GroupDaoImplTest {
+    
+    @ClassRule
+    public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
     
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -51,8 +59,12 @@ class GroupDaoImplTest {
 
         int expectedGroupId = 6;
         String groupName = "AA-00";
-        Group addedGroup = new Group(groupName);
-        Optional<Group> expectedGroup = Optional.of(new Group(expectedGroupId, groupName));
+        Group addedGroup = Group.builder().withGroupName(groupName).build();
+        Optional<Group> expectedGroup = Optional.of(
+                Group.builder()
+                .withGroupId(expectedGroupId)
+                .withGroupName(groupName)
+                .build());
 
         groupDao.save(addedGroup);
 
@@ -64,16 +76,41 @@ class GroupDaoImplTest {
     void saveAll_shouldAddGroupsToTable_whenEnteredDataIsCorrect() {
 
         List<Group> addedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group("AA-01"), 
-                new Group("BB-02")));
+                Group.builder()
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupName("BB-02")
+                .build()));
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"),
-                new Group(2, "VA-90"),
-                new Group(3, "VA-52"),
-                new Group(4, "FF-49"),
-                new Group(5, "SR-71"),
-                new Group(6, "AA-01"),
-                new Group(7, "BB-02")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build(),
+                Group.builder()
+                .withGroupId(3)
+                .withGroupName("VA-52")
+                .build(),
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build(),
+                Group.builder()
+                .withGroupId(6)
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupId(7)
+                .withGroupName("BB-02")
+                .build()));
 
         groupDao.saveAll(addedGroups);
 
@@ -86,20 +123,21 @@ class GroupDaoImplTest {
 
         int groupId = 1;
         Optional<Group> expectedOptional = Optional.of(
-                new Group(1, "YY-58"));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build());
 
         assertEquals(expectedOptional, groupDao.findById(groupId));
     }
 
     @Test
-    @DisplayName("findById method should throw DataBaseSqlRuntimeException")
-    void findById_shouldThrowDataBaseSqlRuntimeException_whenThereIsNotAnyGroupInTableWithEnteredGroupId() {
+    @DisplayName("findById method should return empty Optional if Course not exists")
+    void findById_shouldReturnEmptyOptional_whenThereIsNotAnyGroupInTableWithEnteredGroupId() {
 
         int groupId = 100;
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> groupDao.findById(groupId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
+        assertEquals(Optional.empty(), groupDao.findById(groupId));
     }
 
     @Test
@@ -107,11 +145,26 @@ class GroupDaoImplTest {
     void findAll_shouldReturnListOfGroups_whenThereAreSomeGroupsInTable() {
 
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(2, "VA-90"),
-                new Group(3, "VA-52"), 
-                new Group(4, "FF-49"), 
-                new Group(5, "SR-71")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build(),
+                Group.builder()
+                .withGroupId(3)
+                .withGroupName("VA-52")
+                .build(),
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findAll());
     }
@@ -123,8 +176,14 @@ class GroupDaoImplTest {
         int rowOffset = 0;
         int rowLimit = 2;
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(2, "VA-90")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(),
+                Group.builder()
+                .withGroupId(2)
+                .withGroupName("VA-90")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findAll(rowOffset, rowLimit));
     }
@@ -135,9 +194,16 @@ class GroupDaoImplTest {
 
         int groupId = 1;
         String groupName = "YY-60";
-        Group updatedGroup = new Group(groupId, groupName);
+        Group updatedGroup = 
+                Group.builder()
+                .withGroupId(groupId)
+                .withGroupName(groupName)
+                .build();
         Optional<Group> expectedGroup = Optional.of(
-                new Group(groupId, groupName));
+                Group.builder()
+                .withGroupId(groupId)
+                .withGroupName(groupName)
+                .build());
 
         groupDao.update(updatedGroup);
 
@@ -152,10 +218,7 @@ class GroupDaoImplTest {
 
         groupDao.deleteById(groupId);
 
-        Exception exception = assertThrows(DataBaseSqlRuntimeException.class, 
-                () -> groupDao.findById(groupId));
-        assertEquals("Can't get element from the table by element ID..", exception.getMessage());
-
+        assertEquals(Optional.empty(), groupDao.findById(groupId));
     }
 
     @Test
@@ -164,9 +227,18 @@ class GroupDaoImplTest {
 
         int studentQuantity = 2;
         List<Group> expectedGroups = new ArrayList<Group>(Arrays.asList(
-                new Group(1, "YY-58"), 
-                new Group(4, "FF-49"), 
-                new Group(5, "SR-71")));
+                Group.builder()
+                .withGroupId(1)
+                .withGroupName("YY-58")
+                .build(), 
+                Group.builder()
+                .withGroupId(4)
+                .withGroupName("FF-49")
+                .build(),
+                Group.builder()
+                .withGroupId(5)
+                .withGroupName("SR-71")
+                .build()));
 
         assertEquals(expectedGroups, groupDao.findGroupWithLessOrEqualsStudentQuantity(studentQuantity));
     }

@@ -179,7 +179,7 @@ public class FrontController {
     private void addNewGroup() {
         viewProvider.printMessage("Enter group name: ");
         String groupName = viewProvider.read();
-        Group group = new Group(groupName);
+        Group group = Group.builder().withGroupName(groupName).build();
         groupDao.save(group);
     }
 
@@ -204,7 +204,7 @@ public class FrontController {
         int groupId = viewProvider.readInt();
         viewProvider.printMessage("Enter group name: ");
         String groupName = viewProvider.read();
-        Group group = new Group(groupId, groupName);
+        Group group = Group.builder().withGroupId(groupId).withGroupName(groupName).build();
         groupDao.update(group);
     }
 

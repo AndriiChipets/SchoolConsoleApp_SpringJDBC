@@ -51,8 +51,12 @@ class FrontControllerTest {
 
         int studentNumber = 15;
         List<Group> groups = new ArrayList<Group>(Arrays.asList(
-                new Group("AA-01"),
-                new Group("BB-02")));
+                Group.builder()
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupName("BB-02")
+                .build()));
         
         when(viewProvider.readInt()).thenReturn(1).thenReturn(studentNumber).thenReturn(0);
         when(groupDao.findGroupWithLessOrEqualsStudentQuantity(anyInt())).thenReturn(groups);
@@ -236,7 +240,9 @@ class FrontControllerTest {
     void run_shouldInvokeMethodAddNewGroup_whenChoiceIs10() {
 
         String groupName = "AA-00";
-        Group group = new Group(groupName);
+        Group group =Group.builder()
+                .withGroupName(groupName)
+                .build();
 
         when(viewProvider.readInt()).thenReturn(10).thenReturn(0);
         when(viewProvider.read()).thenReturn(groupName);
@@ -264,8 +270,12 @@ class FrontControllerTest {
         int rowOffset = 0;
         int rowLimit = 5;
         List<Group> groups = new ArrayList<Group>(Arrays.asList(
-                new Group("AA-01"),
-                new Group("BB-02")));
+                Group.builder()
+                .withGroupName("AA-01")
+                .build(),
+                Group.builder()
+                .withGroupName("BB-02")
+                .build()));
 
         when(viewProvider.readInt()).thenReturn(12).thenReturn(rowOffset).thenReturn(rowLimit).thenReturn(0);
         when(groupDao.findAll(anyInt(), anyInt())).thenReturn(groups);
@@ -280,7 +290,10 @@ class FrontControllerTest {
 
         int groupId = 6;
         String groupName = "AA-00";
-        Group group = new Group(groupId, groupName);
+        Group group = Group.builder()
+                .withGroupId(groupId)
+                .withGroupName(groupName)
+                .build();
 
         when(viewProvider.readInt()).thenReturn(13).thenReturn(groupId).thenReturn(0);
         when(viewProvider.read()).thenReturn(groupName);
