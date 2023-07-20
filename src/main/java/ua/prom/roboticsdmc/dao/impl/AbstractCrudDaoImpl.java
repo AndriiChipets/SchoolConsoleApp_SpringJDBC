@@ -8,7 +8,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import ua.prom.roboticsdmc.dao.CrudDao;
+
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 
 public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
 
@@ -19,17 +23,6 @@ public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
     private final String findAllPeginationQuery;
     private final String updateQuery;
     private final String deleteByIdQuery;
-
-    protected AbstractCrudDaoImpl(JdbcTemplate jdbcTemplate, String saveQuery, String findByIdQuery,
-            String findAllQuery, String findAllPeginationQuery, String updateQuery, String deleteByIdQuery) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.saveQuery = saveQuery;
-        this.findByIdQuery = findByIdQuery;
-        this.findAllQuery = findAllQuery;
-        this.findAllPeginationQuery = findAllPeginationQuery;
-        this.updateQuery = updateQuery;
-        this.deleteByIdQuery = deleteByIdQuery;
-    }
 
     @Override
     public void save(E entity) {

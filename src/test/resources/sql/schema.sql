@@ -1,13 +1,24 @@
--- SCHEMA: school_app_schema
--- DROP SCHEMA IF EXISTS school_app_schema; 
-CREATE SCHEMA IF NOT EXISTS school_app_schema
-AUTHORIZATION school_app_user;
+DROP ROLE IF EXISTS school_app_user;
+
+CREATE ROLE school_app_user WITH
+  LOGIN
+  SUPERUSER
+  INHERIT
+  CREATEDB
+  CREATEROLE
+  REPLICATION
+  PASSWORD '1234';
 
 -- Drop all tables
 DROP TABLE IF EXISTS school_app_schema.groups CASCADE;
 DROP TABLE IF EXISTS school_app_schema.students CASCADE;
 DROP TABLE IF EXISTS school_app_schema.courses CASCADE;
 DROP TABLE IF EXISTS school_app_schema.students_courses CASCADE;
+
+-- SCHEMA: school_app_schema
+DROP SCHEMA IF EXISTS school_app_schema; 
+CREATE SCHEMA IF NOT EXISTS school_app_schema
+AUTHORIZATION school_app_user;
 
 -- TABLE: groups
 CREATE TABLE IF NOT EXISTS school_app_schema.groups (

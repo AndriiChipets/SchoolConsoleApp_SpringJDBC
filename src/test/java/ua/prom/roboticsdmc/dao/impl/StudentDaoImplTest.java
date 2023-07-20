@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,17 +17,19 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.StudentDao;
 import ua.prom.roboticsdmc.domain.Student;
+import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @JdbcTest
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
         scripts = { 
-                "/sql/schemaH2.sql", 
+                "/sql/schema.sql", 
                 "/sql/dataCourse.sql", 
                 "/sql/dataGroup.sql", 
                 "/sql/dataStudent.sql",
@@ -36,6 +39,9 @@ import ua.prom.roboticsdmc.domain.Student;
 @DisplayName("StudentDaoImplTest")
 
 class StudentDaoImplTest {
+    
+    @ClassRule
+    public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
 
     @Autowired
     JdbcTemplate jdbcTemplate;
