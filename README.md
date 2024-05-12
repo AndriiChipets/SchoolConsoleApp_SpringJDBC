@@ -17,6 +17,7 @@ An application that inserts/updates/deletes data in the database using Spring bo
 
 3. Used ApplicationRunner interface as an entry point for triggering generator
 4. Covered services with tests using a mocked DAO layer
-![image](/uploads/e27ae11fd4c7040c321aa354e5e18c2f/image.png)
-![image](/uploads/de8cc87b9f86dc51cf11d8582dcfdcd1/image.png)
-![image](/uploads/b275af0203804ce7a249a7e7a5ec7643/image.png)
+
+![image-3](https://github.com/AndriiChipets/SchoolConsoleApp_SpringJDBC/assets/137887124/fc8d59f5-26d0-46c4-b73b-c5d26444ba26)
+![image-2](https://github.com/AndriiChipets/SchoolConsoleApp_SpringJDBC/assets/137887124/a157ade9-8bec-4c50-997e-05829dca6445)
+![image-1](https://github.com/AndriiChipets/SchoolConsoleApp_SpringJDBC/assets/137887124/74bce8ad-fe39-43fc-9597-decb6d08ea39)
